@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://dragon-skies.github.io/</id>
     <title>Dragon Skies&apos; Blog</title>
-    <updated>2020-03-04T08:41:05.998Z</updated>
+    <updated>2020-03-05T07:45:54.040Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://dragon-skies.github.io/"/>
     <link rel="self" href="https://dragon-skies.github.io/atom.xml"/>
@@ -528,450 +528,176 @@ inline void add(int u,int v,int w){
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[题解 U108005【T1】【Source】]]></title>
-        <id>https://dragon-skies.github.io/post/U108005/</id>
-        <link href="https://dragon-skies.github.io/post/U108005/">
+        <title type="html"><![CDATA[C++入门模板]]></title>
+        <id>https://dragon-skies.github.io/post/RMmodel/</id>
+        <link href="https://dragon-skies.github.io/post/RMmodel/">
         </link>
-        <updated>2020-02-01T16:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>忙人可以跳过分割线的内容</p>
-<hr>
-<p>说实话，这道题目其实并不难。</p>
-<p>虽然这次比赛没有签到送分题，但这道题目总能做出来吧。</p>
-<hr>
-<p>其实就是并查集，先插入元素，然后全部看一遍，如果没有被标记成其他的（即插入完标记还是它本身）。</p>
-<p>那就是病毒根源。</p>
-<p>然后查询每个元素的时候直接 <code>find</code>，特判一下病毒根源。</p>
-<p>拿下 $$100pts$$。</p>
-<p>解释和细节看代码。</p>
-<p>代码如下</p>
-<pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
-using namespace std;
-struct unionFind{//并查集
-	int bin[100005];
-	unionFind(int n){
-		for(int i=1;i&lt;=n;++i) bin[i]=i;
-	}
-	int find(int x){
-		if(bin[x]==x) return x;
-		return find(bin[x]);
-	}
-	int insert(int x,int y){
-		return bin[find(y)]=find(x);
-	}
-};
-int n,x,y,m;
-int main(){
-	ios::sync_with_stdio(false);
-	cin&gt;&gt;n&gt;&gt;m;
-	unionFind u(n);
-	for(int i=1;x!=-1&amp;&amp;y!=-1;++i){              //直到输入&quot;-1,-1&quot;为止，当然可以while循环。
-		cin&gt;&gt;x&gt;&gt;y;
-		if(x==-1||y==-1) break;
-		u.insert(x,y);
-	}
-	for(int i=1;i&lt;=n;++i)                       //如果没有标记为别人传染的，那就是病毒根源
-		if(u.find(i)==i) cout&lt;&lt;i&lt;&lt;endl;
-	for(int i=1;i&lt;=m;++i){
-		cin&gt;&gt;x;
-		if(u.find(x)!=x) cout&lt;&lt;u.find(x)&lt;&lt;endl; //查找x被谁传染的
-		else cout&lt;&lt;&quot;0&quot;&lt;&lt;endl;                   //自己就是病毒根源，输出0.
-	}
-	return 0;
+        <updated>2020-01-01T16:00:00.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="质数专题">质数专题</h2>
+<p>判断素数</p>
+<pre><code class="language-c++">bool isprime(int n){
+	if(n==1||n==0) return false;
+	for(int i=2;i*i&lt;=n;i++) if(n%i==0) return false;
+   return ture;
 }
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[题解 U108008【T2】【Ranking】]]></title>
-        <id>https://dragon-skies.github.io/post/U108008/</id>
-        <link href="https://dragon-skies.github.io/post/U108008/">
-        </link>
-        <updated>2020-02-01T16:00:00.000Z</updated>
-        <content type="html"><![CDATA[<hr>
-<p>T2，难度还是不大。</p>
-<p>看你有没有想到队列 <s>线段树</s></p>
-<hr>
-<p>这一题有两种做法。</p>
-<h2 id="part-1arrow_right队列">Part 1➡️队列：</h2>
-<p>这种做法是我造数据用的，代码简单，思维难度不大。</p>
-<p>就是先所有队伍进队列，然后两个两个比较，实力强的出队再入队，实力弱的出队并统计答案。</p>
-<p>直到队列最后剩下 (1) 个元素。</p>
-<p>代码如下（细节看代码）：</p>
-<pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
-using namespace std;
-struct node{                //id为编号，w为实力，p为排名
-	int id,w,p;
-}x,y;
-int n,cnt;                  //n输入，cnt用来统计排名。
-queue &lt;node&gt; q;             //队列
-node a[1030];
-int main(){
-	cin&gt;&gt;n;
-	for(int i=1;i&lt;=1&lt;&lt;n;i++){       //1&lt;&lt;n=2的n次方,不过会快一点
-		cin&gt;&gt;a[i].w;a[i].id=i;q.push(a[i]);//输入并初始化，入队
-	}
-	while(q.size()&gt;1){           //还要比赛
-		for(int i=1;i&lt;=1&lt;&lt;(n-cnt-1);i++){//还剩下2的(n-cnt-n)次方个比赛
-			x=q.front();q.pop();y=q.front();q.pop();//调出队首
-			if(x.w&gt;y.w){a[y.id].p=cnt+1,q.push(x);} //赢得再次入队
-			else{a[x.id].p=cnt+1,q.push(y);}        //输的统计答案
+<p>埃氏筛</p>
+<pre><code class="language-c++">bool f[N];
+void Prime(int n){
+	memset(f,true,sizeof(f));f[1]=f[0]=false;
+	for(int i=2;i&lt;=n;i++)
+		if(f[i])
+			for(int j=2;i*j&lt;=n;j++)
+				f[i*j]=false;
+}
+</code></pre>
+<p>欧几里得筛</p>
+<pre><code class="language-c++">vector &lt;int&gt; sprime(1);
+int cnt;bool isprime[100000001];
+void Sprime(int n){
+	memset(isprime,true,sizeof(isprime));
+	isprime[1]=isprime[0]=false;
+	for(int i=2;i&lt;=n;i++){
+		if(isprime[i]){
+			cnt++;sprime.push_back(i);
 		}
-		cnt++; //别忘了进入下一轮了
-	}
-	a[q.front().id].p=n+1;      //统计冠军的排名
-	for(int i=1;i&lt;=1&lt;&lt;n;i++) printf(&quot;%d &quot;,a[i].p);   //一个一个输出
-	return 0;
-}
-</code></pre>
-<p>很好理解吧，这样的做法是最简单的。</p>
-<p>如果不能理解的话就按照算法来自己写一套代码。</p>
-<h2 id="part-2arrow_right线段树">Part 2➡️线段树：</h2>
-<p>这一种解法更难理解，普及组同学可以跳过，提高组同学肯定能理解。</p>
-<p>就是普通的线段树，不要查询，不要修改，建一次树就可以知道排名。</p>
-<p>需要在 <code>pushup</code> 的时候统计一下输掉的同学的排名。</p>
-<pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
-using namespace std;
-struct node{
-	int id,s;
-	friend bool operator &gt;(node a,node b){return a.s&gt;b.s;}
-	friend bool operator &lt;(node a,node b){return a.s&lt;b.s;}
-}t[1025],a[1025];//s实力，id编号。
-int n,p[1025];   //统计排名用 p。
-inline node min(node a,node b){return a&lt;b?a:b;}
-inline node max(node a,node b){return a&gt;b?a:b;}
-//max和min自己定义
-inline void pushup(int o,int h){              //更新操作
-	t[o]=max(t[o&lt;&lt;1],t[o&lt;&lt;1|1]);              //这一次比赛的生这是实力强的那个。
-	p[min(t[o&lt;&lt;1],t[o&lt;&lt;1|1]).id]=n-h+1;
-    //输掉比赛的排名是总轮数-当前深度+1，这个式子自己模拟一下就可以得出
-}
-inline void build(int o,int l,int r,int h){     //建树,h表示当前深度
-	if(l==r){t[o]=a[l];return;}
-	int mid=(l+r)&gt;&gt;1;
-	build(o&lt;&lt;1,l,mid,h+1);
-	build(o&lt;&lt;1|1,mid+1,r,h+1);
-	pushup(o,h);
-}
-int main(){
-	ios::sync_with_stdio(false);
-	cin&gt;&gt;n;
-	for(int i=1;i&lt;=1&lt;&lt;n;++i){        //输入和初始化
-		cin&gt;&gt;a[i].s;
-		a[i].id=i;
-	}
-	build(1,1,1&lt;&lt;n,1);
-	p[t[1].id]=n+1;           //记得统计一下冠军的排名
-	for(int i=1;i&lt;=1&lt;&lt;n;i++) cout&lt;&lt;p[i]&lt;&lt;&quot; &quot;;//依然是这样输出
-	return 0;
-}
-</code></pre>
-<p>我比较推荐第一种写法，简单并且不容易出错。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[题解 U108009【T3】【Address】]]></title>
-        <id>https://dragon-skies.github.io/post/U108009/</id>
-        <link href="https://dragon-skies.github.io/post/U108009/">
-        </link>
-        <updated>2020-02-01T16:00:00.000Z</updated>
-        <content type="html"><![CDATA[<hr>
-<p>稍微有一点难度了，不过难度依然不大。</p>
-<p>应该很容易可以 <code>AC</code> 如果你学了 <code>map</code> 的话。</p>
-<p>哦，你应该还需要知道可以：</p>
-<pre><code class="language-c++">map &lt;string,vector &lt;string&gt; &gt; m;
-</code></pre>
-<hr>
-<p>乍一看，好像是一个 <code>Hash</code> 表的题目？</p>
-<p>很遗憾的告诉你，这一题我的确是想用 <code>Hash</code> 表来写 <code>std.cpp</code> 的，但是无奈，写不出来。</p>
-<p>那怎么办？</p>
-<p>用一个有两个字符串类型的数组来模拟每个同学的住址？然后询问的时候 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 所以总复杂度是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>m</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(nm)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mord mathdefault">m</span><span class="mclose">)</span></span></span></span>。</p>
-<p>代码如下：</p>
-<pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
-using namespace std;
-struct node{
-	string na,area;
-};
-node a[100005];//存信息
-int n,m;string area,na;bool f;   //na存学生姓名，area存地名
-int main(){
-	ios::sync_with_stdio(false);
-	cin&gt;&gt;n&gt;&gt;m;
-	for(int i=1;i&lt;=n;i++) cin&gt;&gt;a[i].na&gt;&gt;a[i].area;//输入
-	for(int i=1;i&lt;=m;i++){
-		cin&gt;&gt;area;       //处理
-		for(int i=1;i&lt;=n;i++)
-			if(a[i].area==area){
-				cout&lt;&lt;a[i].na&lt;&lt;&quot; &quot;; //找到一个学生
-				f=true;             //标记找到了
-			}
-		if(!f) cout&lt;&lt;&quot;There is no student there.&quot;;    //没找到
-		cout&lt;&lt;endl;f=false;    //重新定义f=false;
-	}
-	return 0;
-}
-</code></pre>
-<p>看看结果：</p>
-<figure data-type="image" tabindex="1"><img src="https://dragon-skies.github.io//post-images/1583310516247.png" alt="" loading="lazy"></figure>
-<p>可以看到暴力 <code>TLE</code> 了。（总共用时12.18s，非常慢）</p>
-<p>这良心 <s>毒瘤</s> 出题人不会让你这么轻松就过的！</p>
-<p>那么怎么办呢。</p>
-<p>有没有想到用一个二维数组，以地名为一个索引，然后把所有的同学的名字存进这个索引里面呢。</p>
-<p>可以自己写一个函数转换地名与数字。</p>
-<p>那是肯定要用 <code>vector</code> 了。</p>
-<p>但是不知道为什么只得了 $$5$$ 分，我就不展示代码了。</p>
-<p>最后，正解来了。</p>
-<p>正解只是不用上面的二维数组，而是使用 <code>map</code>，这样又快，又容易写。</p>
-<p>代码如下：</p>
-<pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
-using namespace std;
-map &lt;string,vector&lt;string&gt; &gt; mp; //存信息
-int n,m;string na,area;          //na存学生姓名，area存地名
-int main(){
-	ios::sync_with_stdio(false);
-	cin&gt;&gt;n&gt;&gt;m;
-	for(int i=1;i&lt;=n;i++){      //初始化
-		cin&gt;&gt;na&gt;&gt;area;
-		mp[area].push_back(na);
-	}
-	for(int i=1;i&lt;=m;i++){
-		cin&gt;&gt;area;
-		if(mp[area].size()==0)         //那地方没有学生
-			cout&lt;&lt;&quot;There is no student there.&quot;&lt;&lt;endl;
-		else{                          //否则一个一个输出
-			for(int j=0;j&lt;mp[area].size();j++)
-				cout&lt;&lt;mp[area][j]&lt;&lt;&quot; &quot;;
-			cout&lt;&lt;endl;
+		for(int j=1;j&lt;=cnt&amp;&amp;i*sprime[j]&lt;=n;j++){
+			isprime[i*sprime[j]]=false;
+			if(i%sprime[j]==0)
+				break;
 		}
 	}
-	return 0;
 }
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[题解 U108011【T4】【Sakura】]]></title>
-        <id>https://dragon-skies.github.io/post/U108011/</id>
-        <link href="https://dragon-skies.github.io/post/U108011/">
-        </link>
-        <updated>2020-02-01T16:00:00.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="题解-u108011t4sakura">题解 U108011【T4】【Sakura】</h1>
-<hr>
-<p>这道题目难度直接上天了。</p>
-<p>标准答案都差点超时了。</p>
-<hr>
-<p>这道题目的描述非常长，一定要看懂题目，认真审题，不要遗漏了关键信息导致 <code>WA</code> 或 <code>RE</code> ，得了 0 分。</p>
-<p>这一题涉及到的知识点有：模拟，链表，排序，标记下放，求两个不重合区间的排列总数，求两个完全重合的区间的排列总数，求两个部分重合区间的排列总数。</p>
-<p>好吓人呐！</p>
-<p>别怕，我们一个一个解决。</p>
-<h2 id="part-one-链表">Part One : 链表：</h2>
-<p>Q ： 为什么要用链表？</p>
-<p>A ： 因为这里的枝条是有一个前驱和一个后继的，符合链表的结构，而且还会改变顺序，使用链表是 <code>O(1)</code> 的，而使用数组是 <code>O(n)</code> 的。看一下链表代码：</p>
-<pre><code class="language-c++">struct sakura{
-	long long s;//存储每一个编号上的枝条个数，注意一定要开 long long，不然就最高 30 分。
-	int last,next;//下一个和上一个
-	inline void init(int i,int n){
-		if(i==1) last=-1;//如果是第一个，那就没有上一个
-		else last=i-1;  //默认前面的是编号-1
-		if(i==n) next=-1;//如果不是最后一个，拿下一个就是
-		else next=i+1;  //默认后面的是编号+1
-	}
-};
-sakura sak[100005];//不用开那么大，但是避免 RE 就开大点
-inline void add(int x,int y){//标准的修改位置
-	sak[sak[x].last].next = sak[x].next;
-	sak[sak[x].next].last = sak[x].last;
-	sak[x].last = y;
-	sak[x].next= sak[y].next;
-	sak[sak[y].next].last = x;
-	sak[y].next = x;
+<h2 id="排序专题">排序专题</h2>
+<p>快速排序</p>
+<pre><code class="language-c++">void qsort(int a[],int l,int r){//对a数组进行从小到大排序 
+	int mid=(l+r)/2,i=l,j=r;
+	do{
+		while(a[i]&lt;a[mid]) i++;
+		while(a[j]&gt;a[mid]) j--;
+		 if(i&lt;=j){
+			swap(a[i],a[j]);
+			i++;j--;
+		 }
+	}while(i&lt;=j);
+	if(l&lt;j) qsort(a,l,j);
+	if(i&lt;r) qsort(a,i,r);
 	return;
 }
 </code></pre>
-<h2 id="part-two-模拟">Part Two : 模拟：</h2>
-<p>Q ： 怎么模拟？</p>
-<p>A ： 先对发生变化的时间排一下序，因为输入的时间保证是有序的，所以当输入一个数的时候，把前面的事都干完，就不用每次询问都全部算一遍了。</p>
-<h2 id="part-three-排序">Part Three : 排序：</h2>
-<p>直接使用 <code>sort</code> 即可，但是还要定义一下交换规则。</p>
-<pre><code class="language-c++">inline bool cmp(node a,node b){
-	if(a.tim!=b.tim) return a.tim&lt;b.tim;         //先干时间早的
-	return a.pox&lt;b.pox;                          //时间一样，先加在再乘再换位置
+<p>归并排序</p>
+<pre><code class="language-c++">void msort(int a[],int l,int r,bool(*cmp)(int,int)){
+	if(l&gt;=r) return;
+	int mid=(l+r)&gt;&gt;1,i=l,j=mid+1,t=0;
+	msort(a,l,mid,cmp);
+	msort(a,mid+1,r,cmp);
+	while(i&lt;=mid&amp;&amp;j&lt;=r){
+		if(cmp(a[i],a[j])) 
+			b[++t]=a[j++];
+		else 
+			b[++t]=a[i++];
+	}
+	while(i&lt;=mid) b[++t]=a[i++];
+	while(j&lt;=r)   b[++t]=a[j++];
+	for(i=1;i&lt;=t;i++) a[l+i-1]=b[i];
+	return ;
 }
 </code></pre>
-<h2 id="part-four-标记下放">Part Four : 标记下放 ：</h2>
-<p>既然是时间早的先做，那就使用一个队列，每次询问的时候都把该干的事情干完，然后就把这个标记 &quot;扔掉&quot; 即可。</p>
-<p>这里要记得每次计算的时候都要取模</p>
-<pre><code class="language-c++">inline void push_down(int x=head){
-	if(q[x].pox==1){         //加
-		int u=q[x].x;        //第一个要加的
-		for(int i=1;i&lt;=q[x].y;i++){//往后枚举
-			sak[u].s=(sak[u].s+q[x].w)%ha;//记得每次都要取模
-			u=sak[u].next;        //下一个数
-			if(u==-1) return;     //没有下一个数了退出
-		}
-		return;
-	}
-	if(q[x].pox==2){     //原理同加
-		int u=q[x].x; 
-		for(int i=1;i&lt;=q[x].y;i++){
-			sak[u].s=(sak[u].s*q[x].w)%ha;
-			u=sak[u].next;
-			if(u==-1) return;
-		}
-		return;
-	}
-	if(q[x].pox==3){      //移动就直接用上面的移动就行了。
-		add(q[x].x,q[x].y);
-		return;
-	}
-}
-</code></pre>
-<h2 id="font-colorred-part-five-计算两个区间的排列总数-font"><font color="red"> Part Five : 计算两个区间的排列总数 ：</font></h2>
-<p>重点，重点，重点！</p>
-<p>这一个没做对整道题 0 分。</p>
-<p>为了和题目区分，这里使用 &quot;{}&quot; 作为区间的记号。</p>
-<p>这里要分三种情况讨论：</p>
-<p>通用测试代码：</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[题解 P5682 [CSPJX2019]次大值【民间数据】]]></title>
+        <id>https://dragon-skies.github.io/post/P5682/</id>
+        <link href="https://dragon-skies.github.io/post/P5682/">
+        </link>
+        <updated>2019-11-18T16:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>2020-2-3:修改了几个错字,增加了一些注释与例子.</p>
+<p>还好这道题目简单,要不然我就没有入门组一等奖了.</p>
+<p><s>还好重考了,要不然我只有100分</s></p>
+<p>好的,切入正题</p>
+<p>这个题目其实可以暴力做</p>
+<p>每个数对其他的数进行取模 , 复杂度是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">n^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> , 最少拿个40分 ,  说不定运气好多拿点分</p>
+<p>但实际上要拿满分 , 要用到一句话:</p>
+<p><strong>真正的高手不用暴力,他用的是数学.</strong></p>
+<h4 id="从取模的性质去考虑吧">从取模的性质去考虑吧</h4>
+<ol>
+<li>
+<p>MOD (%) 运算 , 指两个数的余数.( a%b=a/b的余数 )</p>
+</li>
+<li>
+<p>一个数模于另一个数(a % b(b <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">≠</mi></mrow><annotation encoding="application/x-tex">\neq</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mrel"><span class="mrel"><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="rlap"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="inner"><span class="mrel"></span></span><span class="fix"></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span><span class="mrel">=</span></span></span></span></span> 0)(a <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>&lt;</mo></mrow><annotation encoding="application/x-tex">&lt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span></span></span></span> b))的结果不可能大于b.</p>
+</li>
+<li>
+<p>但是一个更小的数mod更大的数(a mod b(b&gt;a)) 所得的值还是它本身 (a) .</p>
+</li>
+</ol>
+<h4 id="综上所述我们得出一个结论">综上所述，我们得出一个结论:</h4>
+<blockquote>
+<ul>
+<li>在一个数列里的数能得到的最大的模数就是他本身.</li>
+</ul>
+</blockquote>
+<p>题目要求mod的次大值. 次大值就是第三大的数(最大的是第二大的数,如果没有第三大的数,则需要输出-1)</p>
+<p>于是可以上代码了</p>
 <pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
 using namespace std;
-int a,b,c,d,ans;
+int a[2*1000001],n,b,c,maxn;
+//a数组存储数据,n总数,b,c用来找数,maxn是答案.
 int main(){
-	ios::sync_with_stdio(false);
-	cin&gt;&gt;a&gt;&gt;b&gt;&gt;c&gt;&gt;d;
-	for(int i=a;i&lt;=b;i++)
-		for(int j=c;j&lt;=d;j++)
-			if(i!=j)
-				ans++;
-	cout&lt;&lt;ans&lt;&lt;endl;
+	scanf(&quot;%d&quot;,&amp;n);
+	for(int i=1;i&lt;=n;++i) scanf(&quot;%d&quot;,&amp;a[i]);
+	//在处理之前,先要排序 
+	sort(a+1,a+n+1);
+	//找数部分 
+	for(int i=n;1;--i){
+		//如果没有答案,输出-1 
+		if(i==0){
+			printf(&quot;-1&quot;);
+			return 0;
+		}
+		//暂时先定答案 
+		maxn = a[i];
+		if(b==0) b=a[i];
+		if(c==0&amp;&amp;b!=0&amp;&amp;a[i]!=b) c=a[i];
+		//找到了退出 
+		if(b!=0&amp;&amp;c!=0&amp;&amp;a[i]!=b&amp;&amp;a[i]!=c) break;
+	}
+	//输出最大的数.
+	printf(&quot;%d&quot;,maxn);
 	return 0;
 }
 </code></pre>
-<p>因为这里 <code>Katex</code> 渲染功能很差，所以看着不好看敬请谅解</p>
-<p>这一份代码表示从 a 到 b 中选一个数，从 c 到 d 中选一个数，两个数不相同的方案数。</p>
-<p>我们用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">len_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示 a 到 b 中数字个数总数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">len_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示 c 到 d 中数字个数总数</p>
-<p>区间：比如，从 a 到 b 之间的所有元素的集合叫做区间。</p>
-<h3 id="1两个不重合区间的排列总数">1.两个不重合区间的排列总数：</h3>
-<p>很显然，可以从第一个区间里面选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">len_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 个数，因为两个区间不重复，所以第二个区间里面可以选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">len_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 个数，所以总公的个数是：</p>
-<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>×</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">len_1 \times len_2
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>
-<h3 id="2两个完全重合区间的排列总数">2.两个完全重合区间的排列总数：</h3>
-<p>因为两个区间完全重合，所以 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>=</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">len_1=len_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
-<p>也很显然，还是可以从第一个区间里面选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">len_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 个数，但是从第二个区间里面只能选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">len_2-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个数。</p>
-<p>所以一共能选<br>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>×</mo><mo>(</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>−</mo><mn>1</mn><mo>)</mo><mtext>  </mtext><mo>(</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>=</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">len_1 \times (len_1-1) \ \ (len_1=len_2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mspace"> </span><span class="mspace"> </span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></p>
-<h3 id="3两个有部分重合区间的排列总数">3.两个有部分重合区间的排列总数：</h3>
-<p>就是这个最难了，其实这个也不难，我们只要把第二个区间分成两个区间：与第一个区间重复的区间和与第一个区间不重复的区间。</p>
-<p>不好表达，举个例子：</p>
-<p>[1,3] (区间1~3) [2,4](区间2~4)​</p>
-<p>第一个区间还是[1,3]，但是第二个区间被分成了重复的[2,3]和不重复的[3,4]。</p>
-<p>我们用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">len_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示第一个区间的长度，用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub></mrow><annotation encoding="application/x-tex">len_{cf}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">c</span><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 表示第二个区间分出来的重复区间的长度，用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">len_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示第二个区间分出来的不重复区间的长度。</p>
-<p>很轻松地枚举一下（或者用计算机算一下）可以得出总方案数的个数会等于：<br>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>×</mo><mo>(</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>−</mo><mn>1</mn><mo>)</mo><mo>+</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo>×</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">len_{cf} \times(len_1-1)+len_1 \times len_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">c</span><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><br>
-其实就是分成了 1 和 2 两种情况分别计算，然后相加。</p>
-<h2 id="应用">应用：</h2>
-<p>怎么应用到这个题目呢？</p>
-<p>只要把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>1</mn></msub><mo separator="true">,</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>2</mn></msub><mo separator="true">,</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mi>c</mi></msub><mi>f</mi><mo separator="true">,</mo><mi>l</mi><mi>e</mi><msub><mi>n</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">len_1,len_2,len_cf,len_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">c</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示成这一个区间的和就行了。</p>
-<p>然后公式照旧，问题迎刃而解。</p>
-<h2 id="评估">评估：</h2>
-<p>这一道题目难就难在题目很长，模拟难度很大并且这个组合思维不是很好想，所以我给了 <code>提高+/省选-</code> 这个难度。</p>
-<h2 id="代码">代码：</h2>
-<p>中遇到你们最喜欢的代码啦！（90多行的恐惧）</p>
+<p>当然啦 , 如果你想我这样写 , 那么恭喜你 , 你成功在CSP-JX入门组的 [T2] 得了50分.</p>
+<p>为什么呢 ? 设想一下 , 如果是在极端情况下 , 最大的数模于第二大的数可能会大于第三大的数.</p>
+<p>例如:  1 10 19</p>
+<p>正确答案是 9,而如果按上面的程序,它会输出1.</p>
+<p>所以一定要考虑到问题的多样性!!!</p>
+<p>正确代码:</p>
 <pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
-const int ha=5201314;
 using namespace std;
-struct node{            //这个用来存每个标记的信息。
-	int tim,pox,x,y,w;
-};
-struct sakura{
-	long long s;//存储每一个编号上的枝条个数，注意一定要开 long long，不然就最高 30 分。
-	int last,next;//下一个和上一个
-	inline void init(int i,int n){
-		if(i==1) last=-1;//如果是第一个，那就没有上一个
-		else last=i-1;  //默认前面的是编号-1
-		if(i==n) next=-1;//如果不是最后一个，拿下一个就是
-		else next=i+1;  //默认后面的是编号+1
-	}
-};
-sakura sak[100005];//不用开那么大，但是避免 RE 就开大点
-inline void add(int x,int y){//标准的修改位置
-	sak[sak[x].last].next = sak[x].next;
-	sak[sak[x].next].last = sak[x].last;
-	sak[x].last = y;
-	sak[x].next= sak[y].next;
-	sak[sak[y].next].last = x;
-	sak[y].next = x;
-	return;
-}
-node q[100005];bool vis[100005];
-int n,m,k,head=1;
-inline void push_down(int x=head){
-	if(q[x].pox==1){         //加
-		int u=q[x].x;        //第一个要加的
-		for(int i=1;i&lt;=q[x].y;i++){//往后枚举
-			sak[u].s=(sak[u].s+q[x].w)%ha;//记得每次都要取模
-			u=sak[u].next;        //下一个数
-			if(u==-1) return;     //没有下一个数了退出
-		}
-		return;
-	}
-	if(q[x].pox==2){     //原理同加
-		int u=q[x].x; 
-		for(int i=1;i&lt;=q[x].y;i++){
-			sak[u].s=(sak[u].s*q[x].w)%ha;
-			u=sak[u].next;
-			if(u==-1) return;
-		}
-		return;
-	}
-	if(q[x].pox==3){      //移动就直接用上面的移动就行了。
-		add(q[x].x,q[x].y);
-		return;
-	}
-}
-inline bool cmp(node a,node b){
-	if(a.tim!=b.tim) return a.tim&lt;b.tim;         //先干时间早的
-	return a.pox&lt;b.pox;                          //时间一样，先加在再乘再换位置
-}
+int a[2*1000001],n,b,c,maxn;
+//a数组存储数据,n总数,b,c用来找数,maxn是答案.
 int main(){
-	ios::sync_with_stdio(false);
-	cin&gt;&gt;n&gt;&gt;m&gt;&gt;k;
-	for(int i=1;i&lt;=n;i++){        //输入一个，初始化一个
-		cin&gt;&gt;sak[i].s;
-		sak[i].init(i,n);
-	}
-	for(int i=1;i&lt;=m;i++){
-		cin&gt;&gt;q[i].tim&gt;&gt;q[i].pox&gt;&gt;q[i].x&gt;&gt;q[i].y;
-		if(q[i].pox!=3) cin&gt;&gt;q[i].w;     //不要交换的时候就输入w。
-	}
-	sort(q+1,q+m+1,cmp);
-    //这里不使用STL而是自己手写队列的好处是排完序可以直接拿出来用，不用再一个一个地入队，节省时间。
-	for(int i=1;i&lt;=k;i++){
-		int ti,a,b,c,d;
-		long long cf=0,rui=0,ming=0;       //记得开 long long ，不然等着 30 分。
-		cin&gt;&gt;ti&gt;&gt;a&gt;&gt;b&gt;&gt;c&gt;&gt;d;
-		while(head&lt;=m&amp;&amp;q[head].tim&lt;=ti)    //这个标记需要下放
-			push_down(head++);
-		int u=a;
-		for(int j=1;j&lt;=b+1;j++){           //我先计算小蕊的和，记得每次都要取模
-			rui=(rui+sak[u].s)%ha;
-			vis[u]=true; //标记一下，等一下再算小明的就利用这个标记看是不是重复的
-			u=sak[u].next;
-			if(u==-1) break;//同上
+	scanf(&quot;%d&quot;,&amp;n);
+	for(int i=1;i&lt;=n;++i) scanf(&quot;%d&quot;,&amp;a[i]);
+	sort(a+1,a+n+1);  //在处理之前,先要排序 
+	for(int i=n;1;--i){
+		if(i==0){
+			printf(&quot;-1&quot;); //如果没有答案,输出-1 
+			return 0;
 		}
-		u=c;
-		for(int j=1;j&lt;=d+1;j++){
-			if(vis[u]) cf=(cf+sak[u].s)%ha;  //重复算了，那就加到重复的里面去
-			else ming=(ming+sak[u].s)%ha;    //否则就直接加
-			u=sak[u].next;
-			if(u==-1) break;
-		}
-		cout&lt;&lt;((cf*(rui-1)%ha)+(ming*rui%ha))%ha&lt;&lt;endl;  //套用公式，记得取模
-		memset(vis,0,sizeof(vis));                       //别忘了清0.
+		//找到了退出 
+		maxn = a[i];
+		if(b==0) b=a[i];
+		if(c==0&amp;&amp;b!=0&amp;&amp;a[i]!=b) c=a[i];
+		if(b!=0&amp;&amp;c!=0&amp;&amp;a[i]!=b&amp;&amp;a[i]!=c) break;
 	}
+	//把第三大的数和最大的数mod第二大的比较 
+	printf(&quot;%d&quot;,max(maxn,a[n]%a[n-1]));
 	return 0;
 }
-//小明和小蕊的故事害了好多人呢
 </code></pre>
-<p>至此，问题解决</p>
 ]]></content>
     </entry>
 </feed>

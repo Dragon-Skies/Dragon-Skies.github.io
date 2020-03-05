@@ -1885,10 +1885,10 @@ blockquote:before {
   font-weight: bold;
 }
 body {
-      background-color: #eee;
+      background-color: #FFF;
     }
     .nav-toggle .line {
-      background-color: #eee !important;
+      background-color: #FFF !important;
     }.header {
         width: 960px;
         margin: 0 auto;
@@ -1914,7 +1914,7 @@ body {
       border-bottom-color: #555;
     }
     .archive-timeline-box::after, .tag-timeline-wrapper::after {
-      background: #eee;
+      background: #ffa8a8;
     }h1, h2, h3, h4, h5, h6 {
       color: #555;
     }
@@ -1930,14 +1930,14 @@ body {
     .node-title::before {
       background-color: #555;
     }.bg-color {
-      background-color: #fff;
+      background-color: #FFF;
     }a {
-      color: #555;
+      color: #15aabf;
     }
     
     .next-md-body a, .friends-box a  {
-      color: #555;
-      border-bottom: 1px solid #555;
+      color: #15aabf;
+      border-bottom: 1px solid #15aabf;
     }a:hover {
       color: #222;
     }
@@ -1967,44 +1967,44 @@ body {
       background: #f9f9f9;
       color: rgba(0, 0, 0, 0.98);
     }.markdownIt-TOC a {
-      color: #eee;
-      border-bottom-color: #eee;
+      color: #ff8787;
+      border-bottom-color: #ff8787;
     }.markdownIt-TOC a:hover {
       color: #228be6;
       border-bottom-color: #228be6;
     }.active-current > a {
-      color: #fc6423 !important;
-      border-bottom-color: #fc6423 !important;
+      color: #c92a2a !important;
+      border-bottom-color: #c92a2a !important;
     }
     .sidebar-title-active {
-      color: #fc6423 !important;
-      border-bottom-color: #fc6423 !important;
+      color: #c92a2a;
+      border-bottom-color: #c92a2a;
     }
     .sidebar-title-item:hover {
-      color: #fc6423 !important;
+      color: #c92a2a !important;
     }
     .active-show > a {
-      color: #fc6423;
-      border-bottom-color: #fc6423;
+      color: #c92a2a;
+      border-bottom-color: #c92a2a;
     }
     .active-hidden > a {
-      color: #fc6423;
-      border-bottom-color: #fc6423;
+      color: #c92a2a;
+      border-bottom-color: #c92a2a;
     }
       .site-meta {
-        background: #000 !important;
+        background: #862e9c !important;
       }
       .head-top-line {
-        background: #000 !important;
+        background: #862e9c !important;
       }
     .brand {
-      background: #000;
+      background: #212529;
     }
     .main-title {
-      color: #FFF;
+      color: #faa2c1;
     }
     .mist .site-title i {
-      background: #FFF;
+      background: #faa2c1;
     }.box-shadow-wrapper {
       box-shadow: none !important;
     }
