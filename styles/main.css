@@ -1885,10 +1885,10 @@ blockquote:before {
   font-weight: bold;
 }
 body {
-      background-color: #FFF;
+      background-color: #ffd43b;
     }
     .nav-toggle .line {
-      background-color: #FFF !important;
+      background-color: #ffd43b !important;
     }.header {
         width: 960px;
         margin: 0 auto;
@@ -1914,7 +1914,7 @@ body {
       border-bottom-color: #555;
     }
     .archive-timeline-box::after, .tag-timeline-wrapper::after {
-      background: #ffa8a8;
+      background: #22b8cf;
     }h1, h2, h3, h4, h5, h6 {
       color: #555;
     }
@@ -1932,12 +1932,12 @@ body {
     }.bg-color {
       background-color: #FFF;
     }a {
-      color: #15aabf;
+      color: #ff8787;
     }
     
     .next-md-body a, .friends-box a  {
-      color: #15aabf;
-      border-bottom: 1px solid #15aabf;
+      color: #ff8787;
+      border-bottom: 1px solid #ff8787;
     }a:hover {
       color: #222;
     }
@@ -1956,15 +1956,15 @@ body {
       border-bottom-color: #222;
     }
       .nav-item a {
-        color:  #555;
+        color:  #22b8cf;
       }.nav-item a:hover {
         color: #222;
       }.nav-item-active {
-      background: #f9f9f9;
+      background: #ffd43b;
     }
 
     .nav-item:hover {
-      background: #f9f9f9;
+      background: #ffd43b;
       color: rgba(0, 0, 0, 0.98);
     }.markdownIt-TOC a {
       color: #ff8787;
@@ -1992,19 +1992,19 @@ body {
       border-bottom-color: #c92a2a;
     }
       .site-meta {
-        background: #862e9c !important;
+        background: #ffd43b !important;
       }
       .head-top-line {
-        background: #862e9c !important;
+        background: #ffd43b !important;
       }
     .brand {
       background: #212529;
     }
     .main-title {
-      color: #faa2c1;
+      color: #212529;
     }
     .mist .site-title i {
-      background: #faa2c1;
+      background: #212529;
     }.box-shadow-wrapper {
       box-shadow: none !important;
     }
