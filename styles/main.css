@@ -1967,8 +1967,8 @@ body {
       background: #ffd43b;
       color: rgba(0, 0, 0, 0.98);
     }.markdownIt-TOC a {
-      color: #ff8787;
-      border-bottom-color: #ff8787;
+      color: #ffd43b;
+      border-bottom-color: #ffd43b;
     }.markdownIt-TOC a:hover {
       color: #228be6;
       border-bottom-color: #228be6;
