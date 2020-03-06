@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://dragon-skies.github.io/</id>
     <title>Dragon Skies&apos; Blog</title>
-    <updated>2020-03-05T09:35:25.011Z</updated>
+    <updated>2020-03-06T00:15:12.317Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://dragon-skies.github.io/"/>
     <link rel="self" href="https://dragon-skies.github.io/atom.xml"/>
@@ -523,6 +523,261 @@ inline void add(int u,int v,int w){
 	G[u].push_back(edge(v,w));
 	G[v].push_back(edge(u,w));
 	return ;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[题解 U108192 【T4】【Sakura】]]></title>
+        <id>https://dragon-skies.github.io/post/U108192/</id>
+        <link href="https://dragon-skies.github.io/post/U108192/">
+        </link>
+        <updated>2020-02-01T16:00:00.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="题解-u108192-t4sakura">题解 U108192 【T4】Sakura</h1>
+<p>这道题难度其实还蛮大的，需要经过一系列的数学思考，而且最终代码写出来还 <code>90</code> 多行。</p>
+<p>好了，话不多说，进入正题。</p>
+<p>我还是分成几个部分来解决</p>
+<h2 id="模拟变化过程">模拟变化过程：</h2>
+<p>我们应该怎么模拟呢？</p>
+<p>可以看到题目中的话：</p>
+<blockquote>
+<p>每一根枝条后面都只有一根枝条，有一根枝条后面没有纸条。</p>
+</blockquote>
+<p>理解过来就是这样的。</p>
+<p>那像什么呢？链表。</p>
+<p>这就是具有唯一一个前驱和唯一一个后继。</p>
+<p>而且还会进行链表的修改，明显链表的复杂度优于普通的线性表。</p>
+<p>链表代码如下：</p>
+<pre><code class="language-c++">struct sakura{    //存储每一根枝条，用的是链式结构
+	long long s;  //注意这里要开 long long ，不然会WA
+	int last,next;
+	inline void init(int i,int n){//默认上一个的编号是i-1,下一个的编号是i+1.
+		if(i==1) last=-1;//这需要特判
+		else last=i-1;
+		if(i==n) next=-1;//这也需要特判
+		else next=i+1;
+	}
+};
+sakura sak[100005];
+inline void add(int x,int y){//把一根枝条插入到另一根枝条后面
+	sak[sak[x].last].next = sak[x].next;
+	sak[sak[x].next].last = sak[x].last;
+	sak[x].last = y;
+	sak[x].next= sak[y].next;
+	sak[sak[y].next].last = x;
+	sak[y].next = x;
+	return;
+}
+</code></pre>
+<p>好了，存储搞完了，该看看变化了。</p>
+<p>其实加，乘就暴力完成，这里无法记录前缀和。（复杂度太高）</p>
+<p>那我们是不是每输入一次就把所有需要干的事情做一遍呢？</p>
+<p>不，不会的。</p>
+<p>因为它保证了询问的时间是有序的，所以我们只需要问到那里做到哪里就可以了。</p>
+<p>但是这里要注意，因为干的事情的时间不保证有序，所以我们需要先对他进行排序。</p>
+<p>程序片段如下：</p>
+<pre><code class="language-c++">ios::sync_with_stdio(false);
+cin&gt;&gt;n&gt;&gt;m&gt;&gt;k;
+for(int i=1;i&lt;=n;i++){//输入和初始化。
+    cin&gt;&gt;sak[i].s;
+    sak[i].init(i,n);
+}
+for(int i=1;i&lt;=m;i++){//输入一个变化，先不去做她，保存下来。
+    cin&gt;&gt;q[i].tim&gt;&gt;q[i].pox&gt;&gt;q[i].x&gt;&gt;q[i].y;
+    if(q[i].pox!=3) cin&gt;&gt;q[i].w;
+}
+sort(q+1,q+m+1,cmp);//按时间排序，这样就可以当队列拿来用了。
+</code></pre>
+<p>至此，模拟搞定了。</p>
+<h2 id="回答询问">回答询问：</h2>
+<p>接下来是怎么回答询问了。</p>
+<p>这里需要对一些数进行加法，那还是暴力加。</p>
+<p>但是求种数的时候就不能暴力计算了。</p>
+<p>说不定复杂度是  <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>N</mi><mn>5</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(N^5)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</p>
+<p>那我们来用数学的角度算一算吧。</p>
+<p>为了更好地测试，你可能需要以下的代码：</p>
+<pre><code class="language-c++">//计算左闭右闭区间[a,b]中的所有数和左闭右闭区间[c,d]中的所有数的不重复排列
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+int a,b,c,d,ans;
+int main(){
+	ios::sync_with_stdio(false);
+	cin&gt;&gt;a&gt;&gt;b&gt;&gt;c&gt;&gt;d;
+	for(int i=a;i&lt;=b;i++)
+		for(int j=c;j&lt;=d;j++)
+			if(i!=j)
+				ans++;
+	cout&lt;&lt;ans&lt;&lt;endl;
+	return 0;
+}
+</code></pre>
+<h3 id="求区间排列之两个区间完全不重叠">求区间排列之——两个区间完全不重叠：</h3>
+<p>例题：小蕊会从 1~10 中随机选一个数，小明会从11~20 中选一个数。她们选的数不相等的情况有几种？</p>
+<p>列举一下完事嘛。</p>
+<pre><code>1&amp;11 1&amp;12 1&amp;13 1&amp;14 1&amp;15 1&amp;16 1&amp;17 1&amp;18 1&amp;19 1&amp;20 
+2&amp;11 2&amp;12 2&amp;13 2&amp;14 2&amp;15 2&amp;16 2&amp;17 2&amp;18 2&amp;19 2&amp;20 
+3&amp;11 3&amp;12 3&amp;13 3&amp;14 3&amp;15 3&amp;16 3&amp;17 3&amp;18 3&amp;19 3&amp;20 
+4&amp;11 4&amp;12 4&amp;13 4&amp;14 4&amp;15 4&amp;16 4&amp;17 4&amp;18 4&amp;19 4&amp;20 
+5&amp;11 5&amp;12 5&amp;13 5&amp;14 5&amp;15 5&amp;16 5&amp;17 5&amp;18 5&amp;19 5&amp;20 
+6&amp;11 6&amp;12 6&amp;13 6&amp;14 6&amp;15 6&amp;16 6&amp;17 6&amp;18 6&amp;19 6&amp;20 
+7&amp;11 7&amp;12 7&amp;13 7&amp;14 7&amp;15 7&amp;16 7&amp;17 7&amp;18 7&amp;19 7&amp;20 
+8&amp;11 8&amp;12 8&amp;13 8&amp;14 8&amp;15 8&amp;16 8&amp;17 8&amp;18 8&amp;19 8&amp;20 
+9&amp;11 9&amp;12 9&amp;13 9&amp;14 9&amp;15 9&amp;16 9&amp;17 9&amp;18 9&amp;19 9&amp;20 
+10&amp;11 10&amp;12 10&amp;13 10&amp;14 10&amp;15 10&amp;16 10&amp;17 10&amp;18 10&amp;19 10&amp;20 
+</code></pre>
+<p>一共 <code>100</code> 种方案 <s>手痛</s>。</p>
+<p>可以看出，在两个区间不重复的情况下，小蕊可以从 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>u</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">rui</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span></span></span></span> 个数中选一个，小明可以从 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> 个数中选一个，那么选不同的数的方案数是：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>u</mi><mi>i</mi><mo>×</mo><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">rui \times ming
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span></span></p>
+<p>解释一下：这就是乘法原理，因为两个不重叠区间不可能取到相同的数，让小蕊先选的话可以选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn></mrow><annotation encoding="application/x-tex">1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个，此时小可以选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> 个，所以一共可以选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mo>×</mo><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">1 \times ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> ，但小蕊可以选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>u</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">rui</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span></span></span></span> 个，所方案数是：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mo>×</mo><mi>r</mi><mi>u</mi><mi>i</mi><mo>×</mo><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi><mo>=</mo><mi>r</mi><mi>u</mi><mi>i</mi><mo>×</mo><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">1 \times rui \times ming=rui \times ming
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span></span></p>
+<h2 id="求排列之两个区间有覆盖关系">求排列之——两个区间有覆盖关系：</h2>
+<p>例题：小蕊会从 1~10 中随机选一个数，小明会从5~10 中选一个数。她们选的数不相等的情况有几种？</p>
+<p>还是列举一下（用&amp;连接一种情况，用空格隔开不同的情况）：</p>
+<pre><code>1&amp;5 1&amp;6 1&amp;7 1&amp;8 1&amp;9 1&amp;10 
+2&amp;5 2&amp;6 2&amp;7 2&amp;8 2&amp;9 2&amp;10 
+3&amp;5 3&amp;6 3&amp;7 3&amp;8 3&amp;9 3&amp;10 
+4&amp;5 4&amp;6 4&amp;7 4&amp;8 4&amp;9 4&amp;10 
+5&amp;6 5&amp;7 5&amp;8 5&amp;9 5&amp;10 
+6&amp;5 6&amp;7 6&amp;8 6&amp;9 6&amp;10 
+7&amp;5 7&amp;6 7&amp;8 7&amp;9 7&amp;10 
+8&amp;5 8&amp;6 8&amp;7 8&amp;9 8&amp;10 
+9&amp;5 9&amp;6 9&amp;7 9&amp;8 9&amp;10 
+10&amp;5 10&amp;6 10&amp;7 10&amp;8 10&amp;9 
+</code></pre>
+<p><s>手又酸了</s></p>
+<p>可以看得出来，一共有 45 种方案。</p>
+<p>怎么算的呢？我们还是用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>u</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">rui</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span></span></span></span> 表示小蕊能选的数的个数， <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> 表示小明能选的个数（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>u</mi><mi>i</mi><mtext> </mtext><mo>≥</mo><mtext> </mtext><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">rui\ \geq\ ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.79549em;vertical-align:-0.13597em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mspace"> </span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mspace"> </span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span>）：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi><mo>×</mo><mo>(</mo><mi>r</mi><mi>u</mi><mi>i</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">ming \times (rui-1)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></span></p>
+<p>解释一下：因为小蕊的区间覆盖了小明的区间，所以要让小明先选（不然可能小蕊选了数小明选数又发生了变化）。</p>
+<p>小明可以选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> 个数。但是小蕊只能选 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mi>u</mi><mi>i</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">rui-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个数（还有一个被小明用掉了）。</p>
+<p>所以总方案数：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi><mo>×</mo><mo>(</mo><mi>r</mi><mi>u</mi><mi>i</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">ming \times (rui-1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span> 。</p>
+<h3 id="求区间排列之两个区间部分重叠">求区间排列之——两个区间部分重叠：</h3>
+<p>例题：小蕊会从 1~10 中随机选一个数，小明会从5~15 中选一个数。她们选的数不相等的情况有几种？</p>
+<p>还是列举吧。</p>
+<pre><code>1&amp;5 1&amp;6 1&amp;7 1&amp;8 1&amp;9 1&amp;10 1&amp;11 1&amp;12 1&amp;13 1&amp;14 1&amp;15 
+2&amp;5 2&amp;6 2&amp;7 2&amp;8 2&amp;9 2&amp;10 2&amp;11 2&amp;12 2&amp;13 2&amp;14 2&amp;15 
+3&amp;5 3&amp;6 3&amp;7 3&amp;8 3&amp;9 3&amp;10 3&amp;11 3&amp;12 3&amp;13 3&amp;14 3&amp;15 
+4&amp;5 4&amp;6 4&amp;7 4&amp;8 4&amp;9 4&amp;10 4&amp;11 4&amp;12 4&amp;13 4&amp;14 4&amp;15 
+5&amp;6 5&amp;7 5&amp;8 5&amp;9 5&amp;10 5&amp;11 5&amp;12 5&amp;13 5&amp;14 5&amp;15 
+6&amp;5 6&amp;7 6&amp;8 6&amp;9 6&amp;10 6&amp;11 6&amp;12 6&amp;13 6&amp;14 6&amp;15 
+7&amp;5 7&amp;6 7&amp;8 7&amp;9 7&amp;10 7&amp;11 7&amp;12 7&amp;13 7&amp;14 7&amp;15 
+8&amp;5 8&amp;6 8&amp;7 8&amp;9 8&amp;10 8&amp;11 8&amp;12 8&amp;13 8&amp;14 8&amp;15 
+9&amp;5 9&amp;6 9&amp;7 9&amp;8 9&amp;10 9&amp;11 9&amp;12 9&amp;13 9&amp;14 9&amp;15 
+10&amp;5 10&amp;6 10&amp;7 10&amp;8 10&amp;9 10&amp;11 10&amp;12 10&amp;13 10&amp;14 10&amp;15 
+</code></pre>
+<p>其实这里也很好算，就是把小明的区间分成两个区间：跟小蕊重复的和不跟小蕊重复的。（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>f</mi></mrow><annotation encoding="application/x-tex">cf</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span> 表示跟小蕊重复的，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><msub><mi>g</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">ming_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示不跟小蕊重复的）</p>
+<p>那么重复的区间和小蕊选一个数的方案数是：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>f</mi><mo>×</mo><mo>(</mo><mi>r</mi><mi>u</mi><mi>i</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">cf \times (rui-1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></p>
+<p>那么不重复的区间和小蕊选一个数的方案数是：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><msub><mi>g</mi><mn>1</mn></msub><mo>×</mo><mi>r</mi><mi>u</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">ming_1 \times rui</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span></span></span></span> 。</p>
+<p>所以总方案数是：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>f</mi><mo>×</mo><mo>(</mo><mi>r</mi><mi>u</mi><mi>i</mi><mo>−</mo><mn>1</mn><mo>)</mo><mo>+</mo><mi>m</mi><mi>i</mi><mi>n</mi><msub><mi>g</mi><mn>1</mn></msub><mo>×</mo><mi>r</mi><mi>u</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">cf \times (rui-1) + ming_1 \times rui
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">u</span><span class="mord mathdefault">i</span></span></span></span></span></p>
+<p>我们可以发现，如果两个不重叠的区间套用这个公式，也是可以成立的（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>f</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">cf=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>），两个完全重叠的区间套用这个公式，让然成立（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><msub><mi>g</mi><mn>1</mn></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">ming_1=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>）。</p>
+<h2 id="应用到本题">应用到本题</h2>
+<p>怎么应用呢？</p>
+<p>我们还是用 $ rui$ 表示小蕊可选的总数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>f</mi></mrow><annotation encoding="application/x-tex">cf</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span> 表示重复的种数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><msub><mi>g</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">ming_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示小明的不合小蕊重复的种数。一样套用公式即可。</p>
+<p>怎么求这三个数呢？</p>
+<p>小蕊的就直接加，顺便对这个位置打上一个加了的标记。</p>
+<p>小明加的时候就看有没有打这个标记：打了，就加到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>f</mi></mrow><annotation encoding="application/x-tex">cf</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span> 里面去，没打，就加到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow><annotation encoding="application/x-tex">ming</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> 里面去。</p>
+<p>至此，问题解决。</p>
+<h2 id="代码">代码：</h2>
+<p>完整代码：</p>
+<pre><code class="language-c++">#include&lt;bits/stdc++.h&gt;
+const int ha=5201314;
+using namespace std;
+struct node{      //存储每一次变化
+	int tim,pox,x,y,w;
+};
+struct sakura{    //存储每一根枝条，用的是链式结构
+	long long s;  //注意这里要开 long long ，不然会WA
+	int last,next;
+	inline void init(int i,int n){//默认上一个的编号是i-1,下一个的编号是i+1.
+		if(i==1) last=-1;//这需要特判
+		else last=i-1;
+		if(i==n) next=-1;//这也需要特判
+		else next=i+1;
+	}
+};
+sakura sak[100005];
+inline void add(int x,int y){//把一根枝条插入到另一根枝条后面
+	sak[sak[x].last].next = sak[x].next;
+	sak[sak[x].next].last = sak[x].last;
+	sak[x].last = y;
+	sak[x].next= sak[y].next;
+	sak[sak[y].next].last = x;
+	sak[y].next = x;
+	return;
+}
+node q[100005];bool vis[100005];//q其实就是队列，但会进行排序，vis表示有没有访问过，用来计算重复的。
+int n,m,k,head=1;
+inline void push_down(int x=head){//立刻做q[x]的事情。
+	if(q[x].pox==1){//加
+		int u=q[x].x; 
+		for(int i=1;i&lt;=q[x].y;i++){
+			sak[u].s=(sak[u].s+q[x].w)%ha;
+			u=sak[u].next;
+			if(u==-1) return;
+		}
+		return;
+	}
+	if(q[x].pox==2){//乘
+		int u=q[x].x; 
+		for(int i=1;i&lt;=q[x].y;i++){
+			sak[u].s=(sak[u].s*q[x].w)%ha;
+			u=sak[u].next;
+			if(u==-1) return;
+		}
+		return;
+	}
+	if(q[x].pox==3){//把这根枝条插入到别的枝条后面。
+		add(q[x].x,q[x].y);
+		return;
+	}
+}
+inline bool cmp(node a,node b){
+    //排序用的比较函数，先做时间早的，时间一样那就做编号小的（先加在乘最后换位置）
+	if(a.tim!=b.tim) return a.tim&lt;b.tim;
+	return a.pox&lt;b.pox;
+}
+int main(){
+	ios::sync_with_stdio(false);
+	cin&gt;&gt;n&gt;&gt;m&gt;&gt;k;
+	for(int i=1;i&lt;=n;i++){//输入和初始化。
+		cin&gt;&gt;sak[i].s;
+		sak[i].init(i,n);
+	}
+	for(int i=1;i&lt;=m;i++){//输入一个变化，先不去做她，保存下来。
+		cin&gt;&gt;q[i].tim&gt;&gt;q[i].pox&gt;&gt;q[i].x&gt;&gt;q[i].y;
+		if(q[i].pox!=3) cin&gt;&gt;q[i].w;
+	}
+	sort(q+1,q+m+1,cmp);//按时间排序，这样就可以当队列拿来用了。
+	for(int i=1;i&lt;=k;i++){
+		int ti,a,b,c,d;//输入用的
+		long long cf=0,rui=0,ming=0;//cf记录重复的，rui记录小蕊的，ming记录小明的。
+		cin&gt;&gt;ti&gt;&gt;a&gt;&gt;b&gt;&gt;c&gt;&gt;d;
+		while(head&lt;=m&amp;&amp;q[head].tim&lt;=ti)//先把要干的事情干完
+			push_down(head++);
+		int u=a;//先求小蕊的，这里不用算重复，只用标记一下就可以了。
+		for(int j=1;j&lt;=b+1;j++){
+			rui=(rui+sak[u].s)%ha;//记得取模
+			vis[u]=true;//标记一下
+			u=sak[u].next;
+			if(u==-1) break;
+		}
+		u=c;
+		for(int j=1;j&lt;=d+1;j++){//再求小明的，这里就需要计算重复了。
+			if(vis[u]) cf=(cf+sak[u].s)%ha;//算过了的，取模
+			else ming=(ming+sak[u].s)%ha;//没算过。
+			u=sak[u].next;
+			if(u==-1) break;
+		}
+        //这里并没有给小蕊减掉重复，因为把小蕊的看成一个整体，把小明的分开算就行了。
+		cout&lt;&lt;((cf*(rui-1)%ha)+(ming*rui%ha))%ha&lt;&lt;endl;//公式，记得多取一下模。
+		memset(vis,0,sizeof(vis)); //注意这里要重新初始化，不然会发生一些奇奇怪怪的错误。
+	}
+	return 0;
 }
 </code></pre>
 ]]></content>
