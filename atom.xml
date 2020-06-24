@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://dragon-skies.github.io/</id>
     <title>Dragon Skies&apos; Blog</title>
-    <updated>2020-03-06T00:15:12.317Z</updated>
+    <updated>2020-06-24T12:54:15.267Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://dragon-skies.github.io/"/>
     <link rel="self" href="https://dragon-skies.github.io/atom.xml"/>
@@ -12,6 +12,150 @@ From No.10 Middle School.</subtitle>
     <logo>https://dragon-skies.github.io/images/avatar.png</logo>
     <icon>https://dragon-skies.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Dragon Skies&apos; Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[2019~2020年第二学期第三次月考分数代码]]></title>
+        <id>https://dragon-skies.github.io/post/2019~2020 the third score/</id>
+        <link href="https://dragon-skies.github.io/post/2019~2020 the third score/">
+        </link>
+        <updated>2020-06-24T12:32:57.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-py">import xlrd
+import xlwt
+import os
+
+
+def open_excel(file='test.xlsx'):
+    try:
+        data = xlrd.open_workbook(file)
+        return data
+    except:
+        pass
+
+
+def read_excel(filename):
+    wd = open_excel(filename)
+    table = wd.sheets()[0]
+    row = table.nrows
+    col = table.ncols
+    List = []
+    for i in range(row):
+        List.append([])
+        for j in range(col):
+            List[i].append(table.cell(i, j).value)
+    return List
+
+
+def write_excel(namelist, savename, savebool=True):
+    # namelist格式要求,为二维数组,namelist[i]表示第i+1行需要写入的内容
+    row = len(namelist)
+    col = len(namelist[0])
+    workbook = xlwt.Workbook()
+    worksheet = workbook.add_sheet('New Sheet')
+    for i in range(row):
+        for j in range(col):
+            worksheet.write(i, j, namelist[i][j])
+    if(savebool):
+        workbook.save(savename)
+    else:
+        return workbook
+
+'''
+List = read_excel(&quot;开学考试进退.xlsx&quot;)
+#print(List)
+last = {}
+now = {}
+end = {}
+List.pop(0)
+for i in List:
+    last[i[0]]=now[i[0]]=0
+for i in range(len(List)):
+    last[List[i][0]]=List[i][1]
+    now[List[i][2]]=List[i][3]
+List = [['姓名','期末考试排名','开学考试排名','进退']]
+num=1
+for i in last.keys():
+    List.append([])
+    List[num].append(i)
+    List[num].append(last[i])
+    List[num].append(now[i])
+    List[num].append(last[i]-now[i])
+    num+=1
+write_excel(List,&quot;上次进退.xlsx&quot;)
+'''
+
+def count(al,now):
+    if(now&gt;=al*0.9):
+        return (now-(al*0.8)+1)*20
+    if(now&gt;=al*0.8):
+        return (now-(al*0.8)+1)*10
+    if(now&lt;=al*0.7):
+        return (now-al*0.7)*100
+    return 0
+
+def re_list_to_dict(List):
+    now = {}
+    for i in List:
+        tmp = i[:]
+        tmp.pop(0)
+        now[i[0]] = tmp
+    return now
+
+List = read_excel(&quot;score.xls&quot;)
+List.pop(0)
+#print(List)
+write_list = [['姓名','政治','政治得分','历史','历史得分','地理','地理得分','生物','生物得分','本次年排','本次年排得分','本次进退','本次进退得分','开学考试年排','期末考试年排','上次进退得分','奖状得分','总分']]
+#'姓名','政治','政治得分','历史','历史得分','地理','地理得分','生物','生物得分'，
+#'本次年排','本次年排得分','本次进退','本次进退得分','开学考试年排','期末考试年排',
+#'上次进退得分','奖状得分','总分'
+last = read_excel(&quot;上次进退.xlsx&quot;)
+last.pop(0)
+last = re_list_to_dict(last)
+#print(last)
+for i in range(len(List)):
+    num=0
+    write_list.append([])
+    write_list[i+1].append(List[i][0])
+    write_list[i+1].append(List[i][1])
+    write_list[i+1].append(count(70,List[i][1]))
+    num+=count(70,List[i][1])
+    write_list[i+1].append(List[i][2])
+    write_list[i+1].append(count(50,List[i][2]))
+    num+=count(50,List[i][2])
+    write_list[i+1].append(List[i][3])
+    write_list[i+1].append(count(30,List[i][3]))
+    num+=count(30,List[i][3])
+    write_list[i+1].append(List[i][4])
+    write_list[i+1].append(count(30,List[i][4]))
+    num+=count(30,List[i][4])
+    write_list[i+1].append(List[i][5])
+    write_list[i+1].append(1370-List[i][5])
+    num+=1370-List[i][5]
+    write_list[i+1].append(List[i][6])
+    write_list[i+1].append(List[i][6]*2)
+    num+=List[i][6]*2
+    if(List[i][0]!='曾祥淳'):
+        write_list[i+1].append(last[List[i][0]][1])
+        write_list[i+1].append(last[List[i][0]][0])
+        if((last[List[i][0]][1]-last[List[i][0]][0])*(-2)&lt;0):
+            write_list[i+1].append(0)
+        else:
+            write_list[i+1].append((last[List[i][0]][1]-last[List[i][0]][0])*(-2))
+            num += (last[List[i][0]][1]-last[List[i][0]][0])*(-2)
+        if(last[List[i][0]][0]&lt;=300):
+            write_list[i+1].append(30)
+            num+=30
+        else:
+            write_list[i+1].append(0)
+    else:
+        write_list[i+1].append(0)
+        write_list[i+1].append(0)
+        write_list[i+1].append(0)
+        write_list[i+1].append(0)
+    write_list[i+1].append(num)
+
+write_excel(write_list,&quot;end_score.xlsx&quot;)
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[题解 U107929【数的拆分】]]></title>
         <id>https://dragon-skies.github.io/post/U107929/</id>
